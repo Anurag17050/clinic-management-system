@@ -287,20 +287,6 @@ Login with staff credentials. Role is **auto-detected** on login.
 
 ---
 
-### Table List
-
-#	Table	Primary Key	Key Foreign / Unique Constraints
-1	PATIENT	patient_id	phone, email unique
-2	DEPARTMENT	dept_id	dept_name unique; head_doctor_id → DOCTOR (deferrable)
-3	DOCTOR	doctor_id	dept_id → DEPARTMENT; phone, email unique
-4	STAFF	staff_id	dept_id → DEPARTMENT
-5	APPOINTMENT	appt_id	patient_id → PATIENT, doctor_id → DOCTOR; UNIQUE(doctor_id, appt_date, time_slot) prevents double‑booking
-6	PRESCRIPTION	rx_id	appt_id unique → APPOINTMENT (one‑to‑one)
-7	MEDICATION	med_id	med_name unique
-8	PRES_MEDICATION	(rx_id, med_id)	rx_id → PRESCRIPTION, med_id → MEDICATION
-9	MEDICAL_RECORD	record_id	appt_id unique → APPOINTMENT (one‑to‑one)
-10	BILLING	bill_id	appt_id unique → APPOINTMENT; amount > 0; payment_mode IN (…); payment_status IN (…)
-
 ### Key Design Decisions
 1)Circular FK between DEPARTMENT.head_doctor_id and DOCTOR.dept_id → resolved by making the FK DEFERRABLE INITIALLY DEFERRED and inserting departments first with NULL head, then doctors, then updating the head.
 
@@ -344,13 +330,13 @@ Manages Complex Application State: React's component-based architecture and stat
 🏗️ How the Phases Build on Each Other
 The four phases are not isolated; each one relies on the previous:
 
-Phase 1 (Design) provides the blueprint for...
+- **Phase 1 (Design)** provides the blueprint for...
 
-Phase 2 (Oracle Database) which is the structured repository of data, accessed by...
+- **Phase 2 (Oracle Database)** which is the structured repository of data, accessed by...
 
-Phase 3 (Backend API), which secures and exposes this data through logical endpoints, which are finally consumed by...
+- **Phase 3 (Backend API)**, which secures and exposes this data through logical endpoints, which are finally consumed by...
 
-Phase 4 (React Frontend), the final, interactive interface that users see and work with.
+- **Phase 4 (React Frontend)**, the final, interactive interface that users see and work with.
 
 ### Key Design Decisions
 
