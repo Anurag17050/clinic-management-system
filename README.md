@@ -53,7 +53,9 @@ Oracle XE 21c (port 1539)
 ```
 clinic-management-system/
 │
-├── phase1/                     # ER diagram and requirements
+├── phase1/
+│   └── normalisation_analysis(NF).docx  # proof of normalisation for all tables
+│   └── relational schema and diagram           
 │
 ├── phase2/
 │   └── ddl/
@@ -137,7 +139,7 @@ CONNECT clinic_user/clinic123@localhost:1539/XEPDB1
 Verify the setup:
 ```sql
 SELECT table_name FROM user_tables ORDER BY table_name;
--- Should show 15 tables
+-- Should show 10 tables
 ```
 
 ---
@@ -285,31 +287,70 @@ Login with staff credentials. Role is **auto-detected** on login.
 
 ---
 
-## 🗃️ Database Schema
+### Table List
 
-15 tables across 4 functional domains:
+#	Table	Primary Key	Key Foreign / Unique Constraints
+1	PATIENT	patient_id	phone, email unique
+2	DEPARTMENT	dept_id	dept_name unique; head_doctor_id → DOCTOR (deferrable)
+3	DOCTOR	doctor_id	dept_id → DEPARTMENT; phone, email unique
+4	STAFF	staff_id	dept_id → DEPARTMENT
+5	APPOINTMENT	appt_id	patient_id → PATIENT, doctor_id → DOCTOR; UNIQUE(doctor_id, appt_date, time_slot) prevents double‑booking
+6	PRESCRIPTION	rx_id	appt_id unique → APPOINTMENT (one‑to‑one)
+7	MEDICATION	med_id	med_name unique
+8	PRES_MEDICATION	(rx_id, med_id)	rx_id → PRESCRIPTION, med_id → MEDICATION
+9	MEDICAL_RECORD	record_id	appt_id unique → APPOINTMENT (one‑to‑one)
+10	BILLING	bill_id	appt_id unique → APPOINTMENT; amount > 0; payment_mode IN (…); payment_status IN (…)
 
-```
-DEPARTMENT ──── DOCTOR ──────────── DOCTOR_SCHEDULE
-                  │                       │
-                  └──────── APPOINTMENT ──┘
-                                 │
-              ┌──────────────────┼──────────────────┐
-              │                  │                  │
-         PATIENT_VITAL    MEDICAL_RECORD      PRESCRIPTION
-                                                    │
-                                          PRESCRIPTION_ITEM
-                                                    │
-                                              MEDICATION
-              │
-         BILLING
-              │
-    PAYMENT_TRANSACTION ─── INSURANCE_POLICY
-              │
-           PATIENT
+### Key Design Decisions
+1)Circular FK between DEPARTMENT.head_doctor_id and DOCTOR.dept_id → resolved by making the FK DEFERRABLE INITIALLY DEFERRED and inserting departments first with NULL head, then doctors, then updating the head.
 
-STAFF ─── DEPARTMENT
-```
+2)One‑to‑one relationships (APPOINTMENT → PRESCRIPTION, MEDICAL_RECORD, BILLING) enforced by UNIQUE constraints on the foreign key columns.
+
+3)Double‑booking prevention enforced at schema level by UNIQUE(doctor_id, appt_date, time_slot).
+
+4)No repeating groups – medications linked via junction table PRES_MEDICATION.
+
+5)Surrogate integer PKs for all tables except PRES_MEDICATION (composite natural PK).
+
+### 📝 Significance of Each Phase
+🔷 Phase 1: Database Design (ER Diagram, Schema, Normalization)
+This foundational phase is about creating a blueprint for your data. Its significance lies in ensuring long-term data integrity and efficiency:
+
+Eliminates Data Redundancy & Anomalies: Using Normalization (e.g., achieving 3NF) organizes data to minimize duplication, which saves storage and prevents update, insert, and delete anomalies.
+
+Ensures Data Consistency: A well-defined ER Diagram and Relational Schema with clear primary/foreign keys act as a contract for developers and a guide for implementation, preventing structural errors later.
+
+🔷 Phase 2: Oracle Implementation (DDL Scripts, Triggers)
+This is where your database design is translated into a physical Oracle Database. Its significance is enforcing business rules at the data layer:
+
+Enforces Critical Business Rules: Triggers, like your trg_prevent_double_booking, allow you to embed application logic (like checking for scheduling conflicts) directly into the database, ensuring rules are always enforced, regardless of how data is accessed.
+
+Automates State Changes & Maintains Data Integrity: A trigger like trg_update_payment_status automatically updates related data (e.g., changing a bill's status from 'PENDING' to 'PARTIAL' or 'PAID'), ensuring consistency and reducing application-side errors.
+
+🔷 Phase 3: Backend (Python Flask REST API)
+This phase builds the bridge between your database and the user interface. Its significance is creating a secure, scalable, and controlled access point for data:
+
+Acts as a Secure Middleman: The backend encapsulates the business logic and prevents direct client access to the database. All operations, like patient registration or appointment booking, go through your secure API.
+
+Enables Loose Coupling & Reusability: A well-designed REST API creates a stable contract. This allows the frontend to be changed (e.g., to a mobile app) or updated without altering the underlying database logic, making the entire system more modular and maintainable.
+
+🔷 Phase 4: Frontend (React.js)
+This phase delivers the final user experience, transforming your API into an intuitive, interactive application. Its significance is providing a functional, user-friendly interface for clinic staff:
+
+Creates an Interactive, Role-Based Dashboard: Using a framework like React allows you to build a dynamic Single Page Application (SPA). It efficiently fetches data from your API and updates the UI in real time for different user roles (Admin, Doctor, Staff).
+
+Manages Complex Application State: React's component-based architecture and state management let you handle complex workflows (like booking an appointment with many input fields) in an organized way, ensuring a smooth user experience.
+
+🏗️ How the Phases Build on Each Other
+The four phases are not isolated; each one relies on the previous:
+
+Phase 1 (Design) provides the blueprint for...
+
+Phase 2 (Oracle Database) which is the structured repository of data, accessed by...
+
+Phase 3 (Backend API), which secures and exposes this data through logical endpoints, which are finally consumed by...
+
+Phase 4 (React Frontend), the final, interactive interface that users see and work with.
 
 ### Key Design Decisions
 
@@ -323,7 +364,7 @@ STAFF ─── DEPARTMENT
 | Trigger | Table | Action |
 |---------|-------|--------|
 | `trg_prevent_double_booking` | `APPOINTMENT` | Prevents same doctor being booked in same slot on same date |
-| `trg_update_payment_status` | `PAYMENT_TRANSACTION` | Auto-updates billing status to `PARTIAL` or `PAID` after each payment |
+| `trg_update_payment_status` | `BILLING` | Automatically updates payment_status to PAID when a payment is recorded (or PARTIAL if partial payments were supported – simplified to PAID on any non‑null payment) |
 | `trg_complete_appointment` | `MEDICAL_RECORD` | Auto-marks appointment as `COMPLETED` when a medical record is inserted |
 
 ---
