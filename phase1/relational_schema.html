@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Clinic Management System — Relational Schema</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Segoe UI', Arial, sans-serif;
+      background: #0f1117;
+      color: #e2e8f0;
+      padding: 32px 24px;
+    }
+    h1 {
+      text-align: center;
+      font-size: 1.7rem;
+      font-weight: 700;
+      color: #63b3ed;
+      margin-bottom: 6px;
+      letter-spacing: 0.5px;
+    }
+    .subtitle {
+      text-align: center;
+      font-size: 0.9rem;
+      color: #718096;
+      margin-bottom: 36px;
+    }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(420px, 1fr));
+      gap: 20px;
+      max-width: 1300px;
+      margin: 0 auto;
+    }
+    .table-card {
+      background: #1a1f2e;
+      border: 1px solid #2d3748;
+      border-radius: 10px;
+      overflow: hidden;
+    }
+    .table-header {
+      background: #2b3a52;
+      padding: 10px 16px;
+      font-size: 0.85rem;
+      font-weight: 700;
+      letter-spacing: 1.5px;
+      color: #90cdf4;
+      text-transform: uppercase;
+      border-bottom: 1px solid #2d3748;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.82rem;
+    }
+    th {
+      background: #232b3a;
+      padding: 7px 14px;
+      text-align: left;
+      color: #a0aec0;
+      font-weight: 600;
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      border-bottom: 1px solid #2d3748;
+    }
+    td {
+      padding: 7px 14px;
+      border-bottom: 1px solid #1e2533;
+      vertical-align: top;
+      line-height: 1.5;
+    }
+    tr:last-child td { border-bottom: none; }
+    tr:hover td { background: #1f2940; }
+    .attr-name { color: #e2e8f0; font-family: 'Courier New', monospace; font-size: 0.8rem; }
+    .type-badge {
+      display: inline-block;
+      padding: 1px 7px;
+      border-radius: 3px;
+      font-size: 0.68rem;
+      font-weight: 700;
+      letter-spacing: 0.5px;
+      margin-right: 4px;
+    }
+    .pk { background: #2c5282; color: #90cdf4; }
+    .fk { background: #44337a; color: #b794f4; }
+    .cpk { background: #1a4731; color: #68d391; }
+    .constraints { color: #718096; font-size: 0.75rem; font-style: italic; }
+    .note-box {
+      background: #1a2035;
+      border-left: 3px solid #4299e1;
+      margin: 20px auto;
+      max-width: 1300px;
+      border-radius: 0 8px 8px 0;
+      padding: 14px 18px;
+    }
+    .note-box h3 { color: #63b3ed; font-size: 0.85rem; margin-bottom: 8px; }
+    .note-box p, .note-box li { color: #a0aec0; font-size: 0.8rem; line-height: 1.7; }
+    .note-box ul { padding-left: 18px; }
+    .legend {
+      display: flex; gap: 16px; justify-content: center;
+      margin-bottom: 24px; flex-wrap: wrap;
+    }
+    .legend-item { display: flex; align-items: center; gap: 6px; font-size: 0.78rem; color: #a0aec0; }
+  </style>
+</head>
+<body>
+
+<h1>Clinic Management System</h1>
+<p class="subtitle">Phase 1 — Relational Schema &nbsp;|&nbsp; 10 Tables &nbsp;|&nbsp; Oracle / Python / React Stack</p>
+
+<div class="legend">
+  <div class="legend-item"><span class="type-badge pk">PK</span> Primary Key</div>
+  <div class="legend-item"><span class="type-badge fk">FK</span> Foreign Key</div>
+  <div class="legend-item"><span class="type-badge cpk">CPK</span> Composite PK</div>
+</div>
+
+<div class="grid">
+
+  <!-- PATIENT -->
+  <div class="table-card">
+    <div class="table-header">PATIENT</div>
+    <table>
+      <tr><th>Attribute</th><th>Key</th><th>Constraints</th></tr>
+      <tr><td class="attr-name">patient_id</td><td><span class="type-badge pk">PK</span></td><td class="constraints">INT, NOT NULL</td></tr>
+      <tr><td class="attr-name">name</td><td></td><td class="constraints">NOT NULL</td></tr>
+      <tr><td class="attr-name">dob</td><td></td><td class="constraints">DATE</td></tr>
+      <tr><td class="attr-name">gender</td><td></td><td class="constraints"></td></tr>
+      <tr><td class="attr-name">phone</td><td></td><td class="constraints">UNIQUE, NOT NULL</td></tr>
+      <tr><td class="attr-name">email</td><td></td><td class="constraints">UNIQUE</td></tr>
+      <tr><td class="attr-name">address</td><td></td><td class="constraints"></td></tr>
+      <tr><td class="attr-name">registration_date</td><td></td><td class="constraints">DATE, NOT NULL</td></tr>
+    </table>
+  </div>
+
+  <!-- DEPARTMENT -->
+  <div class="table-card">
+    <div class="table-header">DEPARTMENT</div>
+    <table>
+      <tr><th>Attribute</th><th>Key</th><th>Constraints</th></tr>
+      <tr><td class="attr-name">dept_id</td><td><span class="type-badge pk">PK</span></td><td class="constraints">INT, NOT NULL</td></tr>
+      <tr><td class="attr-name">dept_name</td><td></td><td class="constraints">UNIQUE, NOT NULL</td></tr>
+      <tr><td class="attr-name">head_doctor_id</td><td><span class="type-badge fk">FK</span></td><td class="constraints">→ DOCTOR(doctor_id), nullable; DEFERRABLE</td></tr>
+    </table>
+  </div>
+
+  <!-- DOCTOR -->
+  <div class="table-card">
+    <div class="table-header">DOCTOR</div>
+    <table>
+      <tr><th>Attribute</th><th>Key</th><th>Constraints</th></tr>
+      <tr><td class="attr-name">doctor_id</td><td><span class="type-badge pk">PK</span></td><td class="constraints">INT, NOT NULL</td></tr>
+      <tr><td class="attr-name">name</td><td></td><td class="constraints">NOT NULL</td></tr>
+      <tr><td class="attr-name">specialization</td><td></td><td class="constraints"></td></tr>
+      <tr><td class="attr-name">phone</td><td></td><td class="constraints">UNIQUE</td></tr>
+      <tr><td class="attr-name">email</td><td></td><td class="constraints">UNIQUE</td></tr>
+      <tr><td class="attr-name">dept_id</td><td><span class="type-badge fk">FK</span></td><td class="constraints">→ DEPARTMENT(dept_id), NOT NULL</td></tr>
+    </table>
+  </div>
+
+  <!-- STAFF -->
+  <div class="table-card">
+    <div class="table-header">STAFF</div>
+    <table>
+      <tr><th>Attribute</th><th>Key</th><th>Constraints</th></tr>
+      <tr><td class="attr-name">staff_id</td><td><span class="type-badge pk">PK</span></td><td class="constraints">INT, NOT NULL</td></tr>
+      <tr><td class="attr-name">name</td><td></td><td class="constraints">NOT NULL</td></tr>
+      <tr><td class="attr-name">role</td><td></td><td class="constraints">NOT NULL</td></tr>
+      <tr><td class="attr-name">phone</td><td></td><td class="constraints"></td></tr>
+      <tr><td class="attr-name">dept_id</td><td><span class="type-badge fk">FK</span></td><td class="constraints">→ DEPARTMENT(dept_id), NOT NULL</td></tr>
+    </table>
+  </div>
+
+  <!-- APPOINTMENT -->
+  <div class="table-card">
+    <div class="table-header">APPOINTMENT</div>
+    <table>
+      <tr><th>Attribute</th><th>Key</th><th>Constraints</th></tr>
+      <tr><td class="attr-name">appt_id</td><td><span class="type-badge pk">PK</span></td><td class="constraints">INT, NOT NULL</td></tr>
+      <tr><td class="attr-name">patient_id</td><td><span class="type-badge fk">FK</span></td><td class="constraints">→ PATIENT(patient_id), NOT NULL</td></tr>
+      <tr><td class="attr-name">doctor_id</td><td><span class="type-badge fk">FK</span></td><td class="constraints">→ DOCTOR(doctor_id), NOT NULL</td></tr>
+      <tr><td class="attr-name">appt_date</td><td></td><td class="constraints">DATE, NOT NULL</td></tr>
+      <tr><td class="attr-name">time_slot</td><td></td><td class="constraints">NOT NULL</td></tr>
+      <tr><td class="attr-name">status</td><td></td><td class="constraints">CHECK IN ('scheduled','completed','cancelled')</td></tr>
+    </table>
+    <div style="padding:6px 14px 8px; font-size:0.72rem; color:#718096; border-top:1px solid #2d3748;">
+      UNIQUE(doctor_id, appt_date, time_slot) — no double-booking
+    </div>
+  </div>
+
+  <!-- PRESCRIPTION -->
+  <div class="table-card">
+    <div class="table-header">PRESCRIPTION</div>
+    <table>
+      <tr><th>Attribute</th><th>Key</th><th>Constraints</th></tr>
+      <tr><td class="attr-name">rx_id</td><td><span class="type-badge pk">PK</span></td><td class="constraints">INT, NOT NULL</td></tr>
+      <tr><td class="attr-name">appt_id</td><td><span class="type-badge fk">FK</span></td><td class="constraints">→ APPOINTMENT(appt_id), UNIQUE (1 per appt)</td></tr>
+      <tr><td class="attr-name">notes</td><td></td><td class="constraints"></td></tr>
+    </table>
+  </div>
+
+  <!-- MEDICATION -->
+  <div class="table-card">
+    <div class="table-header">MEDICATION</div>
+    <table>
+      <tr><th>Attribute</th><th>Key</th><th>Constraints</th></tr>
+      <tr><td class="attr-name">med_id</td><td><span class="type-badge pk">PK</span></td><td class="constraints">INT, NOT NULL</td></tr>
+      <tr><td class="attr-name">med_name</td><td></td><td class="constraints">UNIQUE, NOT NULL</td></tr>
+      <tr><td class="attr-name">description</td><td></td><td class="constraints"></td></tr>
+    </table>
+  </div>
+
+  <!-- PRES_MEDICATION -->
+  <div class="table-card">
+    <div class="table-header">PRES_MEDICATION</div>
+    <table>
+      <tr><th>Attribute</th><th>Key</th><th>Constraints</th></tr>
+      <tr><td class="attr-name">rx_id</td><td><span class="type-badge cpk">CPK</span> <span class="type-badge fk">FK</span></td><td class="constraints">→ PRESCRIPTION(rx_id), NOT NULL</td></tr>
+      <tr><td class="attr-name">med_id</td><td><span class="type-badge cpk">CPK</span> <span class="type-badge fk">FK</span></td><td class="constraints">→ MEDICATION(med_id), NOT NULL</td></tr>
+      <tr><td class="attr-name">dosage</td><td></td><td class="constraints">NOT NULL</td></tr>
+      <tr><td class="attr-name">frequency</td><td></td><td class="constraints">NOT NULL</td></tr>
+      <tr><td class="attr-name">duration</td><td></td><td class="constraints">NOT NULL</td></tr>
+    </table>
+    <div style="padding:6px 14px 8px; font-size:0.72rem; color:#718096; border-top:1px solid #2d3748;">
+      PK: (rx_id, med_id) — composite, natural key; no surrogate needed
+    </div>
+  </div>
+
+  <!-- MEDICAL_RECORD -->
+  <div class="table-card">
+    <div class="table-header">MEDICAL_RECORD</div>
+    <table>
+      <tr><th>Attribute</th><th>Key</th><th>Constraints</th></tr>
+      <tr><td class="attr-name">record_id</td><td><span class="type-badge pk">PK</span></td><td class="constraints">INT, NOT NULL</td></tr>
+      <tr><td class="attr-name">appt_id</td><td><span class="type-badge fk">FK</span></td><td class="constraints">→ APPOINTMENT(appt_id), UNIQUE (1 per appt)</td></tr>
+      <tr><td class="attr-name">symptoms</td><td></td><td class="constraints">NOT NULL</td></tr>
+      <tr><td class="attr-name">treatment</td><td></td><td class="constraints"></td></tr>
+      <tr><td class="attr-name">notes</td><td></td><td class="constraints"></td></tr>
+    </table>
+  </div>
+
+  <!-- BILLING -->
+  <div class="table-card">
+    <div class="table-header">BILLING</div>
+    <table>
+      <tr><th>Attribute</th><th>Key</th><th>Constraints</th></tr>
+      <tr><td class="attr-name">bill_id</td><td><span class="type-badge pk">PK</span></td><td class="constraints">INT, NOT NULL</td></tr>
+      <tr><td class="attr-name">appt_id</td><td><span class="type-badge fk">FK</span></td><td class="constraints">→ APPOINTMENT(appt_id), UNIQUE (1 per appt)</td></tr>
+      <tr><td class="attr-name">amount</td><td></td><td class="constraints">DECIMAL, CHECK > 0</td></tr>
+      <tr><td class="attr-name">payment_mode</td><td></td><td class="constraints">CHECK IN ('cash','card','UPI','insurance')</td></tr>
+      <tr><td class="attr-name">payment_status</td><td></td><td class="constraints">CHECK IN ('pending','paid','cancelled')</td></tr>
+      <tr><td class="attr-name">bill_date</td><td></td><td class="constraints">DATE, NOT NULL</td></tr>
+    </table>
+  </div>
+
+</div>
+
+<div class="note-box" style="margin-top:28px;">
+  <h3>Key Design Notes</h3>
+  <ul>
+    <li><strong>Circular FK resolution:</strong> DEPARTMENT.head_doctor_id → DOCTOR and DOCTOR.dept_id → DEPARTMENT creates a circular dependency. Resolved by inserting DEPARTMENT with head_doctor_id = NULL, inserting doctors, then updating. In Oracle, the FK is declared <code>DEFERRABLE INITIALLY DEFERRED</code>.</li>
+    <li><strong>PRES_MEDICATION composite PK:</strong> (rx_id, med_id) is a natural key — no surrogate needed since the combination is inherently unique and meaningful.</li>
+    <li><strong>No double-booking:</strong> UNIQUE(doctor_id, appt_date, time_slot) enforced at schema level; backed by a trigger in Phase 2 for richer error messages.</li>
+    <li><strong>One-to-one relationships:</strong> PRESCRIPTION, MEDICAL_RECORD, and BILLING each enforce appt_id UNIQUE — exactly one record per appointment.</li>
+  </ul>
+</div>
+
+</body>
+</html>

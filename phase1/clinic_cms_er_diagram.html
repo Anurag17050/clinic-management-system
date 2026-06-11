@@ -1,0 +1,137 @@
+
+<style>
+#erd { padding: 8px 0; }
+#erd svg { max-width: 100%; }
+#erd svg .label { font-family: inherit !important; }
+</style>
+<div id="erd"></div>
+<script type="module">
+import mermaid from 'https://esm.sh/mermaid@11/dist/mermaid.esm.min.mjs';
+const dark = matchMedia('(prefers-color-scheme: dark)').matches;
+await document.fonts.ready;
+mermaid.initialize({
+  startOnLoad: false,
+  theme: 'base',
+  fontFamily: '"Anthropic Sans", sans-serif',
+  themeVariables: {
+    darkMode: dark,
+    fontSize: '13px',
+    fontFamily: '"Anthropic Sans", sans-serif',
+    lineColor: dark ? '#9c9a92' : '#73726c',
+    textColor: dark ? '#c2c0b6' : '#3d3d3a',
+    primaryColor: dark ? '#2a2e3d' : '#eeedfe',
+    primaryBorderColor: dark ? '#534ab7' : '#7f77dd',
+    primaryTextColor: dark ? '#c2c0b6' : '#26215c',
+    edgeLabelBackground: dark ? '#1e2030' : '#f5f4fe',
+  },
+});
+const diagram = `erDiagram
+  DEPARTMENT {
+    int dept_id PK
+    string dept_name
+    int head_doctor_id FK
+  }
+  DOCTOR {
+    int doctor_id PK
+    string name
+    string specialization
+    string phone
+    string email
+    int dept_id FK
+  }
+  STAFF {
+    int staff_id PK
+    string name
+    string role
+    string phone
+    int dept_id FK
+  }
+  PATIENT {
+    int patient_id PK
+    string name
+    date dob
+    string gender
+    string phone
+    string email
+    string address
+    date registration_date
+  }
+  APPOINTMENT {
+    int appt_id PK
+    int patient_id FK
+    int doctor_id FK
+    date appt_date
+    string time_slot
+    string status
+  }
+  PRESCRIPTION {
+    int rx_id PK
+    int appt_id FK
+    string notes
+  }
+  MEDICATION {
+    int med_id PK
+    string med_name
+    string description
+  }
+  PRES_MEDICATION {
+    int rx_id FK
+    int med_id FK
+    string dosage
+    string frequency
+    string duration
+  }
+  MEDICAL_RECORD {
+    int record_id PK
+    int appt_id FK
+    string symptoms
+    string treatment
+    string notes
+  }
+  BILLING {
+    int bill_id PK
+    int appt_id FK
+    decimal amount
+    string payment_mode
+    string payment_status
+    date bill_date
+  }
+
+  DEPARTMENT ||--o{ DOCTOR : "employs"
+  DEPARTMENT ||--o{ STAFF : "assigns"
+  DEPARTMENT }o--o| DOCTOR : "headed by"
+  PATIENT ||--o{ APPOINTMENT : "books"
+  DOCTOR ||--o{ APPOINTMENT : "conducts"
+  APPOINTMENT ||--o| PRESCRIPTION : "produces"
+  APPOINTMENT ||--o| MEDICAL_RECORD : "documents"
+  APPOINTMENT ||--o| BILLING : "generates"
+  PRESCRIPTION ||--o{ PRES_MEDICATION : "contains"
+  MEDICATION ||--o{ PRES_MEDICATION : "appears in"
+`;
+const { svg } = await mermaid.render('erd-svg', diagram);
+document.getElementById('erd').innerHTML = svg;
+
+document.querySelectorAll('#erd svg .node').forEach(node => {
+  const firstPath = node.querySelector('path[d]');
+  if (!firstPath) return;
+  const d = firstPath.getAttribute('d');
+  const nums = d.match(/-?[\d.]+/g)?.map(Number);
+  if (!nums || nums.length < 8) return;
+  const xs = [nums[0], nums[2], nums[4], nums[6]];
+  const ys = [nums[1], nums[3], nums[5], nums[7]];
+  const x = Math.min(...xs), y = Math.min(...ys);
+  const w = Math.max(...xs) - x, h = Math.max(...ys) - y;
+  const rect = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+  rect.setAttribute('x', x); rect.setAttribute('y', y);
+  rect.setAttribute('width', w); rect.setAttribute('height', h);
+  rect.setAttribute('rx', '8');
+  for (const a of ['fill', 'stroke', 'stroke-width', 'class', 'style']) {
+    if (firstPath.hasAttribute(a)) rect.setAttribute(a, firstPath.getAttribute(a));
+  }
+  firstPath.replaceWith(rect);
+});
+
+document.querySelectorAll('#erd svg .row-rect-odd path, #erd svg .row-rect-even path').forEach(p => {
+  p.setAttribute('stroke', 'none');
+});
+</script>
