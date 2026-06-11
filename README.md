@@ -288,15 +288,15 @@ Login with staff credentials. Role is **auto-detected** on login.
 ---
 
 ### Key Design Decisions
-1)Circular FK between DEPARTMENT.head_doctor_id and DOCTOR.dept_id → resolved by making the FK DEFERRABLE INITIALLY DEFERRED and inserting departments first with NULL head, then doctors, then updating the head.
+- **Circular FK** between DEPARTMENT.head_doctor_id and DOCTOR.dept_id → resolved by making the FK DEFERRABLE INITIALLY DEFERRED and inserting departments first with NULL head, then doctors, then updating the head.
 
-2)One‑to‑one relationships (APPOINTMENT → PRESCRIPTION, MEDICAL_RECORD, BILLING) enforced by UNIQUE constraints on the foreign key columns.
+- **One‑to‑one relationships** (APPOINTMENT → PRESCRIPTION, MEDICAL_RECORD, BILLING) enforced by UNIQUE constraints on the foreign key columns.
 
-3)Double‑booking prevention enforced at schema level by UNIQUE(doctor_id, appt_date, time_slot).
+- **Double‑booking prevention** enforced at schema level by UNIQUE(doctor_id, appt_date, time_slot).
 
-4)No repeating groups – medications linked via junction table PRES_MEDICATION.
+- **No repeating groups** – medications linked via junction table PRES_MEDICATION.
 
-5)Surrogate integer PKs for all tables except PRES_MEDICATION (composite natural PK).
+- **Surrogate integer PKs** for all tables except PRES_MEDICATION (composite natural PK).
 
 ### 📝 Significance of Each Phase
 🔷 Phase 1: Database Design (ER Diagram, Schema, Normalization)
