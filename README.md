@@ -16,7 +16,7 @@ A full-stack clinic management application built with **Oracle XE 21c**, **Flask
 ![Doctor Portal](images/doctor_prescriptions.png)
 
 ### Staff Portal — Receptionist Dashboard
-![Staff Portal](images/04_staff_register.png)
+![Staff Portal](images/staff_register.png)
 
 ---
 
