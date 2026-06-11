@@ -4,19 +4,19 @@ A full-stack clinic management application built with **Oracle XE 21c**, **Flask
 
 ---
 
-## 📸 Screenshots
+## 📸 Interface of individual portals
 
 ### Landing Page — Portal Selection
-![Home](docs/screenshots/01_home.jpeg)
+![Home](images/01_home.png)
 
 ### Admin Portal — Patient Management
-![Admin Portal](docs/screenshots/02_admin_patients.png)
+![Admin Portal](images/admin_patients.png)
 
 ### Doctor Portal — Prescription History
-![Doctor Portal](docs/screenshots/03_doctor_prescriptions.png)
+![Doctor Portal](images/doctor_prescriptions.png)
 
 ### Staff Portal — Receptionist Dashboard
-![Staff Portal](docs/screenshots/04_staff_register.png)
+![Staff Portal](images/04_staff_register.png)
 
 ---
 
@@ -423,10 +423,9 @@ EXIT
 
 ---
 
-## 👨‍💻 Authors
+## 👨‍💻 Author
 
 - **Anurag Marda** — BT23CSE032, VNIT Nagpur
-- **Supraja Soudu** — VNIT Nagpur
 
 ---
 
